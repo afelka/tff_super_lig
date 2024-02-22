@@ -111,7 +111,9 @@ output$table4 <- DT::renderDataTable({
 
 output$selected_text3 <- renderText({ 
   
-  paste0("<B>This table works for the first team. The team selected in this case is ", input$team,"</B>")
+  paste0("<B>This table works for the first team. In all seasons, calculations made by assuming
+         teams get 3 points for wins and 1 point for draws. 
+         The team selected in this case is ", input$team,"</B>")
 
 }) 
 
