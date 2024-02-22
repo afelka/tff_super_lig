@@ -145,7 +145,7 @@ output$plot <- renderPlot({
   
   gg <- ggplot(data9, aes(x = season)) +  
     geom_point(aes(y = avg_points, colour  = "avg_points")) +  
-    geom_text(aes(y = avg_points, label = avg_points), vjust = -0.5, color = "green", size = 3 ) +
+    geom_text(aes(y = avg_points, label = avg_points), vjust = -0.5, color = "darkorange", size = 3 ) +
     geom_point(aes(y = avg_goals_scored , colour  = "avg_goals_scored")) + 
     geom_text(aes(y = avg_goals_scored, label = avg_goals_scored), vjust = -0.5, color = "blue", size = 3 ) +
     geom_point(aes(y = avg_goals_conceded , colour  = "avg_goals_conceded")) + 
@@ -158,7 +158,7 @@ output$plot <- renderPlot({
     theme(axis.text.x = element_text(angle = 80, hjust = 1,size=12)) + 
     theme(legend.position="top") +
     labs(color = NULL) +
-    scale_color_manual(values = c( "avg_goals_scored" = "blue", "avg_points" = "green", "avg_goals_conceded" = "red"), 
+    scale_color_manual(values = c( "avg_goals_scored" = "blue", "avg_points" = "darkorange", "avg_goals_conceded" = "red"), 
                        labels = c("Avg. Goals Conceded",  "Avg. Goals Scored", "Avg. Points"))
   
     gg
