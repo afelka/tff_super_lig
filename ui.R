@@ -41,9 +41,10 @@ shinyUI(fluidPage(
                 
                 tabPanel("All Scores", htmlOutput("selected_text2"), DT::dataTableOutput("table3")),
                 
-                tabPanel("List of Games with the Selected Score", uiOutput("score"), DT::dataTableOutput("table4") 
+                tabPanel("List of Games with the Selected Score", uiOutput("score"), DT::dataTableOutput("table4")),
                          
-                         )
+                tabPanel("Avg. Points vs. Avg. Goals Scored/Conceded", htmlOutput("selected_text3"), plotOutput('plot',width = "150%",height = "600px")) 
+                         
                 )
                 
     )
