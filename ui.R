@@ -8,6 +8,10 @@ library(DT)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
 load("games_combined.RData")
 
+games_combined_cleaned_final <- games_combined_cleaned_final %>% group_by(season) %>% 
+  mutate(season_number = cur_group_id()) %>%
+  ungroup()
+
 #define unique team choices
 unique_teams <- unique(sort(games_combined_cleaned_final$home_teams))
 
@@ -27,7 +31,15 @@ shinyUI(fluidPage(
                    choices = team_choices, selected = "GALATASARAY"),
     
     selectInput("team2", "Choose Second Team", 
-                   choices = team_choices, selected = "FENERBAHÇE")
+                   choices = team_choices, selected = "FENERBAHÇE"),
+    
+    sliderInput("seasons_selected", "Select Season Interval (1 = 1959 , 65 = 2022-2023)",
+                min = min(games_combined_cleaned_final$season_number), 
+                max = max(games_combined_cleaned_final$season_number),
+                value = c(min(games_combined_cleaned_final$season_number),
+                          max(games_combined_cleaned_final$season_number)),
+                step = 1 )
+    
     
   ),
   
@@ -35,13 +47,13 @@ shinyUI(fluidPage(
     
     tabsetPanel(type = "tabs",
                 
-                tabPanel("Scores between Selected Teams", DT::dataTableOutput("table1")),
+                tabPanel("Scores between Selected Teams", htmlOutput("selected_seasons_text"), DT::dataTableOutput("table1")),
                 
                 tabPanel("All Scores by a Team", htmlOutput("selected_text"), DT::dataTableOutput("table2")),
                 
                 tabPanel("All Scores", htmlOutput("selected_text2"), DT::dataTableOutput("table3")),
                 
-                tabPanel("List of Games with the Selected Score", uiOutput("score"), DT::dataTableOutput("table4")),
+                tabPanel("List of Games with the Selected Score", uiOutput("score"), htmlOutput("selected_text4"), DT::dataTableOutput("table4")),
                          
                 tabPanel("Avg. Points vs. Avg. Goals Scored/Conceded", htmlOutput("selected_text3"), plotOutput('plot',width = "150%",height = "600px")) 
                          

@@ -8,15 +8,41 @@ library(DT)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
 load("games_combined.RData")
 
+games_combined_cleaned_final <- games_combined_cleaned_final %>% group_by(season) %>% 
+                                     mutate(season_number = cur_group_id()) %>%
+                                     ungroup()
+
 #create tables
 function(input, output) {
+  
+seasons_selected <- reactive({
+    
+data <- games_combined_cleaned_final %>% filter(season_number >= min(input$seasons_selected) &
+                                                season_number <= max(input$seasons_selected))
+    
+})  
 
+first_season <- reactive({
+  
+games_combined_cleaned_final %>% filter(season_number == min(input$seasons_selected)) %>%  distinct(season) %>%
+                            as.character()
+
+})
+
+last_season <- reactive({
+  
+  games_combined_cleaned_final %>% filter(season_number == max(input$seasons_selected)) %>%  distinct(season) %>%
+    as.character()
+  
+})
+  
+  
 output$score <- renderUI({
   selectInput("score", "Select Score", 
               choices = games_combined_cleaned_final %>% filter((home_teams == input$team & 
                                                                          away_teams == input$team2 )|
                                                                         (home_teams == input$team2 & 
-                                                                           away_teams == input$team ) ) %>% 
+                                                                           away_teams == input$team )  ) %>% 
                                 arrange(home_team_goals, away_team_goals) %>%
                                 mutate(Score = paste(home_team_goals, away_team_goals, sep = "-")) %>% select(Score) %>% unique()
               
@@ -26,7 +52,7 @@ output$score <- renderUI({
 
 output$table1 <- DT::renderDataTable({
   
-data <- games_combined_cleaned_final %>% filter((home_teams == input$team & 
+data <- seasons_selected() %>% filter((home_teams == input$team & 
                                                  away_teams == input$team2 )|
                                                    (home_teams == input$team2 & 
                                                       away_teams == input$team ) ) %>% 
@@ -41,17 +67,29 @@ datatable(data, options = list(dom = 'tpi'), filter = list(position = "bottom"))
  
 })
 
+
+
+
+output$selected_seasons_text <- renderText({ 
+  
+  
+  
+  paste0("<B>Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  
+  
+}) 
+
 output$selected_text <- renderText({ 
   
   paste0("<B>This table works for the first team and scores are also showing accordingly (e.g. 1-0 Away means selected team won that game). The team selected
-         in this case is ", input$team,"</B>")
+         in this case is ", input$team, " and Season interval is between ", first_season()," and ",last_season() ," ", "</B>")
   
   
 }) 
 
 output$table2 <- DT::renderDataTable({
   
-  data2 <- games_combined_cleaned_final %>% filter(home_teams == input$team) %>% 
+  data2 <- seasons_selected() %>% filter(home_teams == input$team) %>% 
     mutate(Score = paste(home_team_goals, away_team_goals, sep = "-"),
            Venue = "Home") %>%
     dplyr::rename(Selected_Team = "home_teams",
@@ -59,7 +97,7 @@ output$table2 <- DT::renderDataTable({
                   Selected_Team_Goals = "home_team_goals",
                   Opponent_Team_Goals = "away_team_goals")
   
-  data3 <- games_combined_cleaned_final %>% filter(away_teams == input$team) %>% 
+  data3 <- seasons_selected() %>% filter(away_teams == input$team) %>% 
     mutate(Score = paste(away_team_goals, home_team_goals, sep = "-"),
            Venue = "Away") %>%
     dplyr::rename(Selected_Team = "away_teams",
@@ -77,14 +115,14 @@ output$table2 <- DT::renderDataTable({
 
 output$selected_text2 <- renderText({ 
   
-  paste0("<B>This table works independent of team selections and shows all time scores </B>")
+  paste0("<B>This table works independent of team selections and shows all time scores and Season interval is between ", first_season()," and ",last_season() ," " ,"</B>")
   
   
 }) 
 
 output$table3 <- DT::renderDataTable({
   
-  data5 <- games_combined_cleaned_final %>% 
+  data5 <- seasons_selected() %>% 
     mutate(Score = paste(home_team_goals, away_team_goals, sep = "-")) %>%
     group_by(Score) %>% summarise(Number_of_Times = n()) %>% arrange(desc(Number_of_Times))
   
@@ -94,7 +132,7 @@ output$table3 <- DT::renderDataTable({
 
 output$table4 <- DT::renderDataTable({
   
-  data6 <- games_combined_cleaned_final %>% 
+  data6 <- seasons_selected() %>% 
     filter((home_teams == input$team & 
               away_teams == input$team2 )|
              (home_teams == input$team2 & 
@@ -113,13 +151,19 @@ output$selected_text3 <- renderText({
   
   paste0("<B>This table works for the first team. In all seasons, calculations made by assuming
          teams get 3 points for wins and 1 point for draws. 
-         The team selected in this case is ", input$team,"</B>")
+         The team selected in this case is ", input$team," and Season interval is between ", first_season()," and ",last_season() ," " ,"</B>")
 
+}) 
+
+output$selected_text4 <- renderText({ 
+  
+  paste0("<B>Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  
 }) 
 
 output$plot <- renderPlot({
   
-  data7 <- games_combined_cleaned_final %>% filter(home_teams == input$team) %>% 
+  data7 <- seasons_selected() %>% filter(home_teams == input$team) %>% 
     mutate(Score = paste(home_team_goals, away_team_goals, sep = "-"),
            Venue = "Home") %>%
     dplyr::rename(Selected_Team = "home_teams",
@@ -127,7 +171,7 @@ output$plot <- renderPlot({
                   Selected_Team_Goals = "home_team_goals",
                   Opponent_Team_Goals = "away_team_goals") 
   
-  data8 <- games_combined_cleaned_final %>% filter(away_teams == input$team) %>% 
+  data8 <- seasons_selected() %>% filter(away_teams == input$team) %>% 
     mutate(Score = paste(away_team_goals, home_team_goals, sep = "-"),
            Venue = "Away") %>%
     dplyr::rename(Selected_Team = "away_teams",
