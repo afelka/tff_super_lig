@@ -64,6 +64,11 @@ shinyUI(fluidPage(
                 
                 tabPanel("Most Consecutive Scores by Any Team", htmlOutput("selected_text6"), DT::dataTableOutput("table6")),
                 
+                tabPanel("Avg. Goals Per Game over the Years", htmlOutput("selected_text7"), plotlyOutput('plot2',width = "150%",height = "600px")),
+                
+                tabPanel("Most Consecutive Games with at least X goals", htmlOutput("selected_text8"), DT::dataTableOutput("table7")),
+                
+                
                 )
                 
     )
