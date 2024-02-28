@@ -334,7 +334,7 @@ output$plot2 <- renderPlotly({
   
   p2 <- plotly_build(gg2)
   
-  length<-length(p$x$data)
+  length<-length(p2$x$data)
   invisible(lapply(1:length, function(x) p2$x$data[[x]]<<-c(p2$x$data[[x]], textposition ='top center')))
   
   p2
