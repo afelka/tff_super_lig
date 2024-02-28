@@ -6,7 +6,9 @@ library(DT)
 
 #loading data (not available in the repo as I spent lots of time gathering data, you can use the shinyapp if you want)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
-load("games_combined.RData")
+load("games_version_28022024.RData")
+
+games_combined_cleaned_final <- games_with_new_data
 
 games_combined_cleaned_final <- games_combined_cleaned_final %>% group_by(season) %>% 
   mutate(season_number = cur_group_id()) %>%
@@ -55,8 +57,12 @@ shinyUI(fluidPage(
                 
                 tabPanel("List of Games with the Selected Score", uiOutput("score"), htmlOutput("selected_text4"), DT::dataTableOutput("table4")),
                          
-                tabPanel("Avg. Points vs. Avg. Goals Scored/Conceded", htmlOutput("selected_text3"), plotOutput('plot',width = "150%",height = "600px")) 
-                         
+                tabPanel("Avg. Points vs. Avg. Goals Scored/Conceded", htmlOutput("selected_text3"), plotOutput('plot',width = "150%",height = "600px")),
+                
+                tabPanel("Most Consecutive Wins/Losses/Draws by Selected Team", htmlOutput("selected_text5"), DT::dataTableOutput("table5")),
+                
+                tabPanel("Most Consecutive Scores by Any Team", htmlOutput("selected_text6"), DT::dataTableOutput("table6")),
+                
                 )
                 
     )

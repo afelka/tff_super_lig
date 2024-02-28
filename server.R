@@ -6,11 +6,15 @@ library(DT)
 
 #loading data (not available in the repo as I spent lots of time gathering data, you can use the shinyapp if you want)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
-load("games_combined.RData")
+load("games_version_28022024.RData")
+
+games_combined_cleaned_final <- games_with_new_data
 
 games_combined_cleaned_final <- games_combined_cleaned_final %>% group_by(season) %>% 
                                      mutate(season_number = cur_group_id()) %>%
                                      ungroup()
+
+
 
 #create tables
 function(input, output) {
@@ -208,6 +212,91 @@ output$plot <- renderPlot({
                        labels = c("Avg. Goals Conceded",  "Avg. Goals Scored", "Avg. Points"))
   
     gg
+})
+
+output$selected_text5 <- renderText({ 
+  
+  paste0("<B> This page works only for the seasons after 1972-1973. The team selected
+         in this case is ", input$team, " Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  
+}) 
+
+output$table5 <- DT::renderDataTable({
+  
+  data2 <- seasons_selected() %>% filter(home_teams == input$team) %>% 
+    mutate(Score = paste(home_team_goals, away_team_goals, sep = "-"),
+           Venue = "Home") %>%
+    dplyr::rename(Selected_Team = "home_teams",
+                  Opponent_Team = "away_teams",
+                  Selected_Team_Goals = "home_team_goals",
+                  Opponent_Team_Goals = "away_team_goals")
+  
+  data3 <- seasons_selected() %>% filter(away_teams == input$team) %>% 
+    mutate(Score = paste(away_team_goals, home_team_goals, sep = "-"),
+           Venue = "Away") %>%
+    dplyr::rename(Selected_Team = "away_teams",
+                  Opponent_Team = "home_teams",
+                  Selected_Team_Goals = "away_team_goals",
+                  Opponent_Team_Goals = "home_team_goals")
+  
+  data_consecutive <- rbind(data2,data3) %>% filter(!is.na(dates_of_games)) %>% 
+                      arrange(dates_of_games) %>%
+                      mutate(Result = if_else(Selected_Team_Goals > Opponent_Team_Goals, "Win",
+                             if_else(Selected_Team_Goals == Opponent_Team_Goals, "Draw", "Loss"))) %>%
+                      mutate(is_consecutive = Result == lag(Result, default = first(Result))) %>%
+                      group_by(Result, grp = cumsum(!is_consecutive)) %>%
+                      mutate(consecutive_count = n()) %>% ungroup()
+  
+  data_consecutive_summarised <- data_consecutive %>% group_by(Selected_Team, Result) %>% 
+                                 summarise(Max_Consecutive = max(consecutive_count)) %>% arrange(desc(Result))
+                                
+            
+  datatable(data_consecutive_summarised, options = list(dom = 'tpi'), filter = list(position = "bottom"))  
+  
+})
+
+
+output$selected_text6 <- renderText({ 
+  
+  paste0("<B> This page works only for the seasons after 1972-1973. It is independent of Selected Team. Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  
+}) 
+
+output$table6 <- DT::renderDataTable({
+  
+  data2 <- seasons_selected() %>% 
+    mutate(Score = paste(home_team_goals, away_team_goals, sep = "-"),
+           Venue = "Home") %>%
+    dplyr::rename(Selected_Team = "home_teams",
+                  Opponent_Team = "away_teams",
+                  Selected_Team_Goals = "home_team_goals",
+                  Opponent_Team_Goals = "away_team_goals")
+  
+  data3 <- seasons_selected() %>% 
+    mutate(Score = paste(away_team_goals, home_team_goals, sep = "-"),
+           Venue = "Away") %>%
+    dplyr::rename(Selected_Team = "away_teams",
+                  Opponent_Team = "home_teams",
+                  Selected_Team_Goals = "away_team_goals",
+                  Opponent_Team_Goals = "home_team_goals")
+  
+  data_consecutive_by_score <- rbind(data2,data3) %>% filter(!is.na(dates_of_games)) %>% 
+    arrange(Selected_Team,dates_of_games) %>% distinct() %>%
+    mutate(Result = if_else(Selected_Team_Goals > Opponent_Team_Goals, "Win",
+                            if_else(Selected_Team_Goals == Opponent_Team_Goals, "Draw", "Loss"))) %>%
+    mutate(is_consecutive = Score == lag(Score, default = first(Score))) %>%
+    group_by(Selected_Team, Score, grp = cumsum(!is_consecutive)) %>%
+    mutate(consecutive_count = n()) %>% ungroup()
+  
+  data_consecutive_by_score_summarised <- data_consecutive_by_score %>% group_by(Selected_Team, Score) %>% 
+    summarise(Max_Consecutive = max(consecutive_count)) %>% ungroup() %>% group_by(Score) %>%
+    filter(Max_Consecutive == max(Max_Consecutive)) %>%
+    summarise(Max_Consecutive = first(Max_Consecutive),
+              Teams_List = toString(Selected_Team)) %>% arrange(desc(Max_Consecutive))
+  
+  
+  datatable(data_consecutive_by_score_summarised, options = list(dom = 'tpi'), filter = list(position = "bottom"))  
+  
 })
 
 }
