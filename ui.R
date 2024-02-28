@@ -3,6 +3,7 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(DT)
+library(plotly)
 
 #loading data (not available in the repo as I spent lots of time gathering data, you can use the shinyapp if you want)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
@@ -57,7 +58,7 @@ shinyUI(fluidPage(
                 
                 tabPanel("List of Games with the Selected Score", uiOutput("score"), htmlOutput("selected_text4"), DT::dataTableOutput("table4")),
                          
-                tabPanel("Avg. Points vs. Avg. Goals Scored/Conceded", htmlOutput("selected_text3"), plotOutput('plot',width = "150%",height = "600px")),
+                tabPanel("Avg. Points vs. Avg. Goals Scored/Conceded", htmlOutput("selected_text3"), plotlyOutput('plot',width = "150%",height = "600px")),
                 
                 tabPanel("Most Consecutive Wins/Losses/Draws by Selected Team", htmlOutput("selected_text5"), DT::dataTableOutput("table5")),
                 

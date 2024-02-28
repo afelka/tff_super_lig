@@ -3,6 +3,7 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(DT)
+library(plotly)
 
 #loading data (not available in the repo as I spent lots of time gathering data, you can use the shinyapp if you want)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
@@ -165,7 +166,7 @@ output$selected_text4 <- renderText({
   
 }) 
 
-output$plot <- renderPlot({
+output$plot <- renderPlotly({
   
   data7 <- seasons_selected() %>% filter(home_teams == input$team) %>% 
     mutate(Score = paste(home_team_goals, away_team_goals, sep = "-"),
@@ -195,11 +196,11 @@ output$plot <- renderPlot({
   
   gg <- ggplot(data9, aes(x = season)) +  
     geom_point(aes(y = avg_points, colour  = "avg_points")) +  
-    geom_text(aes(y = avg_points, label = avg_points), vjust = -0.5, color = "darkorange", size = 3 ) +
+    #geom_text(aes(y = avg_points, label = avg_points), vjust = 1, color = "darkorange", size = 3 ) +
     geom_point(aes(y = avg_goals_scored , colour  = "avg_goals_scored")) + 
-    geom_text(aes(y = avg_goals_scored, label = avg_goals_scored), vjust = -0.5, color = "blue", size = 3 ) +
+    #geom_text(aes(y = avg_goals_scored, label = avg_goals_scored), vjust = 1, color = "blue", size = 3 ) +
     geom_point(aes(y = avg_goals_conceded , colour  = "avg_goals_conceded")) + 
-    geom_text(aes(y = avg_goals_conceded, label = avg_goals_conceded), vjust = -0.5, color = "red", size = 3 ) +
+    #geom_text(aes(y = avg_goals_conceded, label = avg_goals_conceded), vjust = 1, color = "red", size = 3 ) +
     theme_classic()  + 
     theme(plot.title = element_text(size=22))+
     theme(plot.title = element_text(hjust = 0.5)) +  
@@ -211,7 +212,12 @@ output$plot <- renderPlot({
     scale_color_manual(values = c( "avg_goals_scored" = "blue", "avg_points" = "darkorange", "avg_goals_conceded" = "red"), 
                        labels = c("Avg. Goals Conceded",  "Avg. Goals Scored", "Avg. Points"))
   
-    gg
+  p <- plotly_build(gg)
+  
+  length<-length(p$x$data)
+  invisible(lapply(1:length, function(x) p$x$data[[x]]<<-c(p$x$data[[x]], textposition ='top center')))
+  
+  p
 })
 
 output$selected_text5 <- renderText({ 
