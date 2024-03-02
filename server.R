@@ -397,8 +397,7 @@ output$table7 <- DT::renderDataTable({
 
 output$selected_text9 <- renderText({ 
   
-  paste0("<B> This page works only for the seasons after 1972-1973. The team selected
-         in this case is ", input$team, " Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  paste0("<B> This page works only for the seasons after 1972-1973. This page is independent of Selected Team. Season interval is between ", first_season()," and ",last_season() ," ","</B>")
   
 }) 
 
@@ -425,8 +424,8 @@ output$table8 <- DT::renderDataTable({
   data_consecutive_by_goals_min1 <- rbind(data20,data30) %>% filter(!is.na(dates_of_games)) %>% 
     arrange(Team,dates_of_games) %>% distinct() %>%
     mutate(is_bigger_than_selected = Selected_Team_Goals >= input$no_of_goals) %>%
-    group_by(Team, Selected_Team_Goals, grp = cumsum(!is_bigger_than_selected)) %>%
-    mutate(consecutive_count = n()) %>% ungroup()
+    group_by(Team, grp = cumsum(!is_bigger_than_selected)) %>%
+    mutate(consecutive_count = n() - 1 ) %>% ungroup()
   
   data_consecutive_by_goals_min1_summarised <- data_consecutive_by_goals_min1 %>% 
     filter(Selected_Team_Goals == input$no_of_goals) %>%
