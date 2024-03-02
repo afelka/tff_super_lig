@@ -23,8 +23,10 @@ team_choices <- setNames(unique_teams, unique_teams)
 #design shiny app: 
 shinyUI(fluidPage(
   
-  
   titlePanel("Turkish Super League Scores"),
+  
+  img(src="./super_league.png",  height="5%", width="5%",  align = "center"),
+  img(src="./tff.png",  height="5%", width="5%",  align = "center"),
   
   wellPanel(
     
@@ -73,8 +75,14 @@ shinyUI(fluidPage(
                 
                 )
                 
-    )
-    
+    ),
+  
+  tags$footer(
+    style = "text-align: center; padding: 10px; background-color: #f5f5f5;",
+    "Developed by: Erdem Emin Akcay | Email: erdememin@gmail.com"
+  )
+  
+  
   )
   
 )
