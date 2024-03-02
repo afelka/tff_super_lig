@@ -55,6 +55,16 @@ output$score <- renderUI({
   
 })
 
+output$no_of_goals <- renderUI({
+  selectInput("no_of_goals", "Select Number of Goals", 
+              choices = (c(1,2,3,4,5,6,7,8,9,10)),
+              selected = 1
+              
+              
+  ) 
+  
+})
+
 output$table1 <- DT::renderDataTable({
   
 data <- seasons_selected() %>% filter((home_teams == input$team & 
@@ -382,5 +392,50 @@ output$table7 <- DT::renderDataTable({
   
 })
 
+
+
+
+output$selected_text9 <- renderText({ 
+  
+  paste0("<B> This page works only for the seasons after 1972-1973. The team selected
+         in this case is ", input$team, " Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  
+}) 
+
+
+
+output$table8 <- DT::renderDataTable({
+  
+  data20 <- seasons_selected() %>% 
+    mutate(home_team_goals = as.numeric(gsub("[^0-9-]", "",home_team_goals)),
+           away_team_goals = as.numeric(gsub("[^0-9-]", "",away_team_goals))) %>%
+    dplyr::rename(Team = "home_teams",
+                  Opponent_Team = "away_teams",
+                  Selected_Team_Goals = "home_team_goals",
+                  Opponent_Team_Goals = "away_team_goals")
+  
+  data30 <- seasons_selected() %>% 
+    mutate(home_team_goals = as.numeric(gsub("[^0-9-]", "",home_team_goals)),
+           away_team_goals = as.numeric(gsub("[^0-9-]", "",away_team_goals))) %>%
+    dplyr::rename(Team = "away_teams",
+                  Opponent_Team = "home_teams",
+                  Selected_Team_Goals = "away_team_goals",
+                  Opponent_Team_Goals = "home_team_goals")
+  
+  data_consecutive_by_goals_min1 <- rbind(data20,data30) %>% filter(!is.na(dates_of_games)) %>% 
+    arrange(Team,dates_of_games) %>% distinct() %>%
+    mutate(is_bigger_than_selected = Selected_Team_Goals >= input$no_of_goals) %>%
+    group_by(Team, Selected_Team_Goals, grp = cumsum(!is_bigger_than_selected)) %>%
+    mutate(consecutive_count = n()) %>% ungroup()
+  
+  data_consecutive_by_goals_min1_summarised <- data_consecutive_by_goals_min1 %>% 
+    filter(Selected_Team_Goals == input$no_of_goals) %>%
+    group_by(Team, Selected_Team_Goals) %>% 
+    summarise(Max_Consecutive = max(consecutive_count)) %>% ungroup() %>% arrange(desc(Max_Consecutive))
+  
+  
+  datatable(data_consecutive_by_goals_min1_summarised, options = list(dom = 'tpi'), filter = list(position = "bottom"))  
+  
+})
 
 }

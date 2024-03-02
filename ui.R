@@ -68,6 +68,8 @@ shinyUI(fluidPage(
                 
                 tabPanel("Most Consecutive Games with X goals", htmlOutput("selected_text8"), DT::dataTableOutput("table7")),
                 
+                tabPanel("Most Consecutive Games with at least X goals", uiOutput("no_of_goals"), htmlOutput("selected_text9"), DT::dataTableOutput("table8"))
+                
                 
                 )
                 
