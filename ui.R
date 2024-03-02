@@ -25,6 +25,8 @@ shinyUI(fluidPage(
   
   titlePanel("Turkish Super League Scores"),
   
+  HTML("<p>Some summary tables and plots from Turkish Super League scores from 1959 until 2022-2023.</p>"),
+  
   img(src="./super_league.png",  height="5%", width="5%",  align = "center"),
   img(src="./tff.png",  height="5%", width="5%",  align = "center"),
   
