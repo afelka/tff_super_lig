@@ -7,9 +7,9 @@ library(plotly)
 
 #loading data (not available in the repo as I spent lots of time gathering data, you can use the shinyapp if you want)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
-load("games_version_28022024.RData")
+load("games_version_28052024.RData")
 
-games_combined_cleaned_final <- games_with_new_data
+games_combined_cleaned_final <- games_new
 
 games_combined_cleaned_final <- games_combined_cleaned_final %>% group_by(season) %>% 
                                      mutate(season_number = cur_group_id()) %>%

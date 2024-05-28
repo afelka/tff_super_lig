@@ -7,9 +7,9 @@ library(plotly)
 
 #loading data (not available in the repo as I spent lots of time gathering data, you can use the shinyapp if you want)
 #https://eea1.shinyapps.io/Turkish_Super_League_Scores/
-load("games_version_28022024.RData")
+load("games_version_28052024.RData")
 
-games_combined_cleaned_final <- games_with_new_data
+games_combined_cleaned_final <- games_new
 
 games_combined_cleaned_final <- games_combined_cleaned_final %>% group_by(season) %>% 
   mutate(season_number = cur_group_id()) %>%
@@ -25,7 +25,7 @@ shinyUI(fluidPage(
   
   titlePanel("Turkish Super League Scores"),
   
-  HTML("<p>Some summary tables and plots from Turkish Super League scores from 1959 until 2022-2023.</p>"),
+  HTML("<p>Some summary tables and plots from Turkish Super League scores from 1959 until 2023-2024.</p>"),
   
   img(src="./super_league.png",  height="5%", width="5%",  align = "center"),
   img(src="./tff.png",  height="5%", width="5%",  align = "center"),
@@ -40,7 +40,7 @@ shinyUI(fluidPage(
     selectInput("team2", "Choose Second Team", 
                    choices = team_choices, selected = "FENERBAHÇE"),
     
-    sliderInput("seasons_selected", "Select Season Interval (1 = 1959 , 65 = 2022-2023)",
+    sliderInput("seasons_selected", "Select Season Interval (1 = 1959 , 66 = 2023-2024)",
                 min = min(games_combined_cleaned_final$season_number), 
                 max = max(games_combined_cleaned_final$season_number),
                 value = c(min(games_combined_cleaned_final$season_number),
