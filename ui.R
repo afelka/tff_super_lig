@@ -54,7 +54,9 @@ shinyUI(fluidPage(
     
     tabsetPanel(type = "tabs",
                 
-                tabPanel("Scores between Selected Teams", htmlOutput("selected_seasons_text"), DT::dataTableOutput("table1")),
+                tabPanel("List of Games between Selected Teams", htmlOutput("selected_seasons_text"),  DT::dataTableOutput("table0")),
+                
+                tabPanel("Scores between Selected Teams", htmlOutput("selected_seasons_text2"), DT::dataTableOutput("table1")),
                 
                 tabPanel("All Scores by a Team", htmlOutput("selected_text"), DT::dataTableOutput("table2")),
                 

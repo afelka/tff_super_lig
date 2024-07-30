@@ -65,6 +65,25 @@ output$no_of_goals <- renderUI({
   
 })
 
+output$table0 <- DT::renderDataTable({
+  
+  data <- seasons_selected() %>% filter((home_teams == input$team & 
+                                           away_teams == input$team2 )|
+                                          (home_teams == input$team2 & 
+                                             away_teams == input$team ) ) %>% 
+    mutate(Score = paste(home_team_goals, away_team_goals, sep = "-")) %>%
+    select(home_teams,away_teams,season,dates_of_games, Score) %>% 
+    dplyr::rename(Home_Team = "home_teams",
+                  Away_Team = "away_teams",
+                  Season = "season",
+                  Date = "dates_of_games")  %>% arrange(desc(Season), desc(Date)) 
+  
+  datatable(data, options = list(dom = 'tpi'), filter = list(position = "bottom"))
+  
+  
+})
+
+
 output$table1 <- DT::renderDataTable({
   
 data <- seasons_selected() %>% filter((home_teams == input$team & 
@@ -86,6 +105,15 @@ datatable(data, options = list(dom = 'tpi'), filter = list(position = "bottom"))
 
 
 output$selected_seasons_text <- renderText({ 
+  
+  
+  
+  paste0("<B>Season interval is between ", first_season()," and ",last_season() ," ","</B>")
+  
+  
+}) 
+
+output$selected_seasons_text2 <- renderText({ 
   
   
   
