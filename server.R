@@ -456,8 +456,7 @@ output$table8 <- DT::renderDataTable({
     mutate(consecutive_count = n() - 1 ) %>% ungroup()
   
   data_consecutive_by_goals_min1_summarised <- data_consecutive_by_goals_min1 %>% 
-    filter(Selected_Team_Goals == input$no_of_goals) %>%
-    group_by(Team, Selected_Team_Goals) %>% 
+    group_by(Team) %>% 
     summarise(Max_Consecutive = max(consecutive_count)) %>% ungroup() %>% arrange(desc(Max_Consecutive))
   
   
