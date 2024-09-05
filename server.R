@@ -451,13 +451,16 @@ output$table8 <- DT::renderDataTable({
   
   data_consecutive_by_goals_min1 <- rbind(data20,data30) %>% filter(!is.na(dates_of_games)) %>% 
     arrange(Team,dates_of_games) %>% distinct() %>%
-    mutate(is_bigger_than_selected = Selected_Team_Goals >= input$no_of_goals) %>%
+    mutate(is_bigger_than_selected = Selected_Team_Goals >= as.numeric(input$no_of_goals)) %>%
     group_by(Team, grp = cumsum(!is_bigger_than_selected)) %>%
     mutate(consecutive_count = n() - 1 ) %>% ungroup()
   
   data_consecutive_by_goals_min1_summarised <- data_consecutive_by_goals_min1 %>% 
     group_by(Team) %>% 
-    summarise(Max_Consecutive = max(consecutive_count)) %>% ungroup() %>% arrange(desc(Max_Consecutive))
+    summarise(Max_Consecutive = max(consecutive_count)) %>% ungroup() %>%
+    arrange(desc(Max_Consecutive)) %>% 
+    filter(Max_Consecutive > 0)
+  
   
   
   datatable(data_consecutive_by_goals_min1_summarised, options = list(dom = 'tpi'), filter = list(position = "bottom"))  
